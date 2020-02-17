@@ -1,0 +1,18 @@
+<h1>Home View</h1>
+
+<main>
+  <section>
+    {{#each posts}}
+      {{>post}}
+    {{/each}}
+  </section>
+  <aside>
+    <a href="/channel/create" class="btn">Create Channel</a>
+    <h3>Popular Channels</h3>
+    <ul>
+      {{#each popularChannels}}
+        <li><a href="/channel/{{ _id }}">{{ name }}</a></li>
+      {{/each}}
+    </ul>
+  </aside>
+</main>
