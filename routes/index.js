@@ -13,7 +13,9 @@ router.get('/', (req, res, next) => {
     .limit(10)
     .then(documents => {
       channels = documents;
-      return Post.find().limit(20);
+      return Post.find()
+        .populate('channel author')
+        .limit(20);
     })
     .then(posts => {
       res.render('home', { posts, popularChannels: channels });

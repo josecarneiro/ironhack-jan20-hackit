@@ -1,11 +1,12 @@
-<a href="/channel/{{ channel }}/post/{{ _id }}">
-  <article class="post">
+<a href="/channel/{{ channel }}/post/{{ _id }}" class="post">
+  <article>
     <figure>
       <img src="https://source.unsplash.com/600x400/?waves" alt="{{ title }}" />
-  </figure>
+    </figure>
     <div>
       <h5>{{ title }}</h5>
       <p>{{ content }}</p>
+      <small>Channel: {{channel.name}} | Author: {{author.name}}</small>
     </div>
   </article>
 </a>

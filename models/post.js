@@ -17,7 +17,13 @@ const schema = new mongoose.Schema({
   },
   channel: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Channel'
+    ref: 'Channel',
+    required: true
+  },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 });
 

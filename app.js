@@ -2,14 +2,19 @@
 
 const { join } = require('path');
 const express = require('express');
+const mongoose = require('mongoose');
 const createError = require('http-errors');
 const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const serveFavicon = require('serve-favicon');
+const expressSession = require('express-session');
+const connectMongo = require('connect-mongo');
+
+const MongoStore = connectMongo(expressSession);
 
 const indexRouter = require('./routes/index');
 const channelRouter = require('./routes/channel');
-const userRouter = require('./routes/user');
+const profileRouter = require('./routes/profile');
 const authenticationRouter = require('./routes/authentication');
 
 const hbs = require('hbs');
@@ -32,12 +37,34 @@ app.use(
   })
 );
 app.use(express.static(join(__dirname, 'public')));
+
+app.use(
+  expressSession({
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 15 * 24 * 60 * 60 * 1000
+    },
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+      ttl: 60 * 60
+    })
+  })
+);
+
+const deserializeUserMiddleware = require('./middleware/deserialize-user');
+const provideUserToTemplates = require('./middleware/provide-user-to-template');
+
+app.use(deserializeUserMiddleware);
+app.use(provideUserToTemplates);
+
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/', indexRouter);
 app.use('/channel', channelRouter);
-app.use('/user', userRouter);
+app.use('/profile', profileRouter);
 app.use('/authentication', authenticationRouter);
 
 // Catch missing routes and forward to error handler
