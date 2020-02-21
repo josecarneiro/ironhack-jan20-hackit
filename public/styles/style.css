@@ -1,3 +1,4 @@
+@charset "UTF-8";
 *, *:before, *:after {
   box-sizing: border-box; }
 
@@ -68,7 +69,7 @@ main {
   main section {
     flex: 1 1 75%; }
   main aside {
-    flex: 1 0 25%;
+    flex: 1 0 14em;
     margin-left: 1em; }
 
 .post {
@@ -84,5 +85,14 @@ main {
   .post:hover {
     color: inherit;
     text-decoration: none; }
+
+.channel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 1em; }
+
+.post-meta  {
+  margin-bottom: 1em; }
 
 /*# sourceMappingURL=style.css.map */

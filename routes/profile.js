@@ -39,7 +39,7 @@ router.get('/:userId', (req, res, next) => {
       }
     })
     .then(posts => {
-      const isOwnProfile = req.user._id.toString() === user._id.toString();
+      const isOwnProfile = req.user && req.user._id.toString() === user._id.toString();
       res.render('profile/single', { profile: user, posts, isOwnProfile });
     })
     .catch(error => {

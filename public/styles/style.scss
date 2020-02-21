@@ -84,7 +84,7 @@ main {
     flex: 1 1 75%;
   }
   aside {
-    flex: 1 0 25%;
+    flex: 1 0 14em;
     margin-left: 1em;
   }
 }
@@ -106,4 +106,15 @@ main {
     color: inherit;
     text-decoration: none;
   }
+}
+
+.channel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 1em;
+}
+
+.post-meta  {
+  margin-bottom: 1em;
 }

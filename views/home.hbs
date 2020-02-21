@@ -7,12 +7,13 @@
     {{/each}}
   </section>
   <aside>
-    <a href="/channel/create" class="btn">Create Channel</a>
-    <h3>Popular Channels</h3>
-    <ul>
+    <h4>Popular Channels</h4>
+    <ul class="channel-list">
       {{#each popularChannels}}
-        <li><a href="/channel/{{ _id }}">{{ name }}</a></li>
+        <li class="channel-item"><a href="/channel/{{ _id }}">{{ name }}</a></li>
       {{/each}}
     </ul>
+    <p>Didn't find the channel you were looking for?</p>
+    <a href="/channel/create" class="btn">Create Channel</a>
   </aside>
 </main>

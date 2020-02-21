@@ -1,8 +1,10 @@
 <article>
   <h1>{{ post.title }}</h1>
-  <span>
-    Channel: <a href="/channel/{{ post.channel._id }}">{{ post.channel.name }}</a> | Author <a href="/profile/{{ post.author._id }}">{{ post.author.name }}</a>
-  </span>
+  <div class="post-meta">
+    <span>
+      Published in <a href="/channel/{{ post.channel._id }}">{{ post.channel.name }}</a>, by <a href="/profile/{{ post.author._id }}">{{ post.author.name }}</a>
+    </span>
+  </div>
   <figure>
     <img src="https://source.unsplash.com/600x400/?waves" alt="Post Title" />
   </figure>
