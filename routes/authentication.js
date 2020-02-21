@@ -5,12 +5,13 @@ const router = new Router();
 
 const User = require('./../models/user');
 const bcryptjs = require('bcryptjs');
+const routeGuard = require('./../middleware/route-guard');
 
-router.get('/sign-in', (req, res, next) => {
+router.get('/sign-in', routeGuard(false), (req, res, next) => {
   res.render('authentication/sign-in');
 });
 
-router.post('/sign-in', (req, res, next) => {
+router.post('/sign-in', routeGuard(false), (req, res, next) => {
   const { email, password } = req.body;
   let user;
   User.findOne({
@@ -21,7 +22,7 @@ router.post('/sign-in', (req, res, next) => {
       if (document) {
         return bcryptjs.compare(password, document.passwordHashAndSalt);
       } else {
-        next(new Error('USER_NOT_FOUND'));
+        return Promise.reject(new Error('USER_NOT_FOUND'));
       }
     })
     .then(result => {
@@ -30,7 +31,7 @@ router.post('/sign-in', (req, res, next) => {
         req.session.userId = user._id;
         res.redirect('/');
       } else {
-        next(new Error('WRONG_PASSWORD'));
+        return Promise.reject(new Error('WRONG_PASSWORD'));
       }
     })
     .catch(error => {
@@ -38,15 +39,23 @@ router.post('/sign-in', (req, res, next) => {
     });
 });
 
-router.get('/sign-up', (req, res, next) => {
+router.get('/sign-up', routeGuard(false), (req, res, next) => {
   res.render('authentication/sign-up');
 });
 
-router.post('/sign-up', (req, res, next) => {
+router.post('/sign-up', routeGuard(false), (req, res, next) => {
   const { email, name, password } = req.body;
-  User.findOne({
-    email
-  })
+
+  Promise.resolve()
+    .then(() => {
+      if (new RegExp('^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}$').test(password)) {
+        return User.findOne({
+          email
+        });
+      } else {
+        return Promise.reject(new Error('PASSWORD_INSECURE'));
+      }
+    })
     .then(user => {
       if (user) {
         next(new Error('USER_ALREADY_EXISTS'));
@@ -71,7 +80,7 @@ router.post('/sign-up', (req, res, next) => {
     });
 });
 
-router.post('/sign-out', (req, res, next) => {
+router.post('/sign-out', routeGuard(true), (req, res, next) => {
   req.session.destroy();
   res.redirect('/');
 });

@@ -2,11 +2,22 @@
   <h1>{{ post.title }}</h1>
   <div class="post-meta">
     <span>
-      Published in <a href="/channel/{{ post.channel._id }}">{{ post.channel.name }}</a>, by <a href="/profile/{{ post.author._id }}">{{ post.author.name }}</a>
+      Published in <a href="/channel/{{ post.channel._id }}">{{ post.channel.name }}</a>, by <a href="/profile/{{ post.author._id }}">{{ post.author.name }}</a> on {{ date post.creationDate 'DD/MM/YYYY' }}
     </span>
   </div>
-  <figure>
-    <img src="https://source.unsplash.com/600x400/?waves" alt="Post Title" />
-  </figure>
+  {{#each post.photos}}
+    <figure>
+      <img src="{{ this }}" />
+    </figure>
+  {{/each}}
   <p>{{ post.content }}</p>
 </article>
+
+<footer>
+  <h4>Comments</h4>
+  {{#each comments}}
+    {{>comment}}
+  {{/each}}
+  <h4>Add a Comment</h4>
+  {{>commentform}}
+</footer>

@@ -5,12 +5,15 @@ const router = new Router();
 
 const Channel = require('./../models/channel');
 const Post = require('./../models/post');
+const Comment = require('./../models/comment');
 
-router.get('/create', (req, res, next) => {
+const routeGuard = require('./../middleware/route-guard');
+
+router.get('/create', routeGuard(true), (req, res, next) => {
   res.render('channel/create');
 });
 
-router.post('/create', (req, res, next) => {
+router.post('/create', routeGuard(true), (req, res, next) => {
   const { name } = req.body;
   Channel.create({
     name
@@ -48,42 +51,123 @@ router.get('/:channelId', (req, res, next) => {
     });
 });
 
-router.get('/:channelId/post/create', (req, res, next) => {
+router.get('/:channelId/post/create', routeGuard(true), (req, res, next) => {
   res.render('channel/create-post');
 });
 
-router.post('/:channelId/post/create', (req, res, next) => {
-  const { title, content } = req.body;
-  const { channelId } = req.params;
+const uploader = require('./../multer-configure.js');
 
-  const author = req.user._id;
+router.post(
+  '/:channelId/post/create',
+  routeGuard(true),
+  uploader.array('photos', 10),
+  (req, res, next) => {
+    const { title, content } = req.body;
+    const { channelId } = req.params;
 
-  Post.create({
-    title,
-    content,
-    channel: channelId,
-    author
-  })
-    .then(post => {
-      res.redirect(`/channel/${post.channel}/post/${post._id}`);
+    const urls = req.files.map(file => {
+      return file.url;
+    });
+
+    const author = req.user._id;
+
+    Post.create({
+      title,
+      content,
+      channel: channelId,
+      author,
+      photos: urls
+    })
+      .then(post => {
+        res.redirect(`/channel/${post.channel}/post/${post._id}`);
+      })
+      .catch(error => {
+        next(error);
+      });
+  }
+);
+
+router.get('/:channelId/post/:postId', (req, res, next) => {
+  const { postId } = req.params;
+
+  let post;
+  Post.findById(postId)
+    .populate('channel author')
+    .then(document => {
+      post = document;
+      if (!document) {
+        return Promise.reject(new Error('NOT_FOUND'));
+      } else {
+        return Comment.find({ post: postId }).populate('author');
+      }
+    })
+    .then(comments => {
+      res.render('channel/single-post', { post, comments });
     })
     .catch(error => {
       next(error);
     });
 });
 
-router.get('/:channelId/post/:postId', (req, res, next) => {
+router.get('/:channelId/post/:postId/edit', (req, res, next) => {
   const { postId } = req.params;
 
+  Post.findOne({
+    _id: postId,
+    author: req.user._id
+  })
+    .then(post => {
+      if (post) {
+        res.render('channel/edit-post', { post });
+      } else {
+        next(new Error('NOT_FOUND'));
+      }
+    })
+    .catch(error => {
+      next(error);
+    });
+});
+
+router.post('/:channelId/post/:postId/edit', routeGuard(true), (req, res, next) => {
+  const { channelId, postId } = req.params;
+  const { title, content } = req.body;
+
+  Post.findOneAndUpdate(
+    {
+      _id: postId,
+      author: req.user._id
+    },
+    {
+      title,
+      content
+    }
+  )
+    .then(() => {
+      res.redirect(`/channel/${channelId}/post/${postId}`);
+    })
+    .catch(error => {
+      next(error);
+    });
+});
+
+router.post('/:channelId/post/:postId/comment', routeGuard(true), (req, res, next) => {
+  const { channelId, postId } = req.params;
+  const { content } = req.body;
+
   Post.findById(postId)
-    .populate('channel author')
     .then(post => {
       if (!post) {
-        next(new Error('NOT_FOUND'));
+        return Promise.reject(new Error('NOT_FOUND'));
       } else {
-        console.log(post);
-        res.render('channel/single-post', { post });
+        return Comment.create({
+          post: postId,
+          author: req.user._id,
+          content
+        });
       }
+    })
+    .then(() => {
+      res.redirect(`/channel/${channelId}/post/${postId}`);
     })
     .catch(error => {
       next(error);

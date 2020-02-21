@@ -6,11 +6,13 @@ const router = new Router();
 const User = require('./../models/user');
 const Post = require('./../models/post');
 
+const routeGuard = require('./../middleware/route-guard');
+
 router.get('/edit', (req, res, next) => {
   res.render('profile/edit');
 });
 
-router.post('/edit', (req, res, next) => {
+router.post('/edit', routeGuard(true), (req, res, next) => {
   const userId = req.user._id;
   const { name } = req.body;
 

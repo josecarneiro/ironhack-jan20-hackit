@@ -1,9 +1,14 @@
 <h1>Create a New Post</h1>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
   <label for="input-title">Post Title</label>
   <input type="text" name="title" id="input-title" placeholder="Input Title" maxlength="80"/>
+
   <label for="input-content">Post Content</label>
   <textarea name="content" id="input-content" placeholder="Write Post Content Here..." maxlength="500"></textarea>
+
+  <label for="input-photos">Photos</label>
+  <input type="file" name="photos" id="input-photos" accept="image/*" multiple />
+  
   <button>Create Post</button>
 </form>

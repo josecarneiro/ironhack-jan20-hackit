@@ -24,6 +24,9 @@ const app = express();
 app.set('views', join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+const handlebarsHelperDate = require('helper-date');
+
+hbs.registerHelper('date', handlebarsHelperDate);
 hbs.registerPartials(join(__dirname, 'views/partials'));
 
 app.use(serveFavicon(join(__dirname, 'public/images', 'favicon.ico')));
@@ -72,13 +75,9 @@ app.use((req, res, next) => {
   next(createError(404));
 });
 
+const catchAllErrorHandler = require('./middleware/catch-all-error-handler');
+
 // Catch all error handler
-app.use((error, req, res, next) => {
-  // Set error information, with stack only available in development
-  res.locals.message = error.message;
-  res.locals.error = req.app.get('env') === 'development' ? error : {};
-  res.status(error.status || 500);
-  res.render('error');
-});
+app.use(catchAllErrorHandler);
 
 module.exports = app;
