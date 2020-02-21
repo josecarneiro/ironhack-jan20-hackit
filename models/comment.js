@@ -4,21 +4,9 @@ const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-      maxlength: 80,
-      trim: true
-    },
-    content: {
-      type: String,
-      required: true,
-      maxlength: 500,
-      trim: true
-    },
-    channel: {
+    post: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Channel',
+      ref: 'Post',
       required: true
     },
     author: {
@@ -26,11 +14,12 @@ const schema = new mongoose.Schema(
       ref: 'User',
       required: true
     },
-    photos: [
-      {
-        type: String
-      }
-    ]
+    content: {
+      type: String,
+      required: true,
+      maxlength: 500,
+      trim: true
+    }
   },
   {
     timestamps: {
@@ -40,6 +29,6 @@ const schema = new mongoose.Schema(
   }
 );
 
-const Model = mongoose.model('Post', schema);
+const Model = mongoose.model('Comment', schema);
 
 module.exports = Model;

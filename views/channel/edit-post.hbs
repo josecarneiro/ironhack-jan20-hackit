@@ -1,0 +1,11 @@
+<h1>Edit a New Post</h1>
+
+<form method="POST">
+  <label for="input-title">Post Title</label>
+  <input type="text" name="title" id="input-title" placeholder="Input Title" maxlength="80" value="{{ post.title }}" />
+
+  <label for="input-content">Post Content</label>
+  <textarea name="content" id="input-content" placeholder="Write Post Content Here..." maxlength="500">{{ post.content }}</textarea>
+
+  <button>Edit Post</button>
+</form>
